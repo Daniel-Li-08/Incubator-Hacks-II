@@ -1,13 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Are You Sure Blocker",
+  "name": "Are You Sure Blocker with Dropdown",
   "version": "1.0",
-  "description": "Blocks pages until user confirms",
+  "description": "Blocks pages with confirmation and has a dropdown menu",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Website Blocker"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
       "run_at": "document_end"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

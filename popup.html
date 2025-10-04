@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 200px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .dropdown {
+      width: 100%;
+    }
+    select, button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .section {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="dropdown">
+    <h3>Website Blocker</h3>
+    
+    <div class="section">
+      <select id="actionSelect">
+        <option value="">Select an action...</option>
+        <option value="block">Block Current Page</option>
+        <option value="unblock">Remove Block (if active)</option>
+        <option value="settings">Settings</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <button id="blockBtn">Block This Page</button>
+      <button id="quickBlock">Quick Block & Close</button>
+    </div>
+
+    <div class="section">
+      <label>
+        <input type="checkbox" id="autoClose"> Auto-close popup
+      </label>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
