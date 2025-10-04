@@ -1,19 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Are You Sure Blocker",
+  "version": "1.0",
+  "description": "Blocks pages until user confirms",
+  "content_scripts": [
     {
-      "manifest_version": 3,
-      "name": "GPT WATER EXTATNION MK.1",
-      "version": "1.0",
-      "description": "This extension track your online water useage.",
-      "icons": {
-        "16": "images/icon16.png",
-        "48": "images/icon48.png"
-      },
-      "action": {
-        "default_popup": "popup.html",
-        "default_icon": {
-          "48": "images/icon48.png"
-        }
-      },
-      "permissions": [
-        "activeTab"
-      ]
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
     }
+  ]
+}
