@@ -1,106 +1,311 @@
-// Create overlay element
-const overlay = document.createElement('div');
-overlay.style.cssText = `
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999999;
-  font-family: Arial, sans-serif;
-`;
+// List of websites with predefined water usage (liters per hour)
+const WEBSITE_WATER_USAGE = {
+  // High usage (300-800+ L/hr)
+  'youtube.com': 780,
+  'netflix.com': 750,
+  'aws.amazon.com': 720,
+  'cloud.google.com': 710,
+  'azure.microsoft.com': 700,
+  'tiktok.com': 680,
+  'twitch.tv': 650,
+  'instagram.com': 620,
+  'facebook.com': 600,
+  'zoom.us': 580,
+  'disneyplus.com': 570,
+  'hulu.com': 560,
+  'spotify.com': 550,
+  'icloud.com': 540,
+  'pinterest.com': 520,
+  'vimeo.com': 510,
+  'dailymotion.com': 500,
+  'soundcloud.com': 480,
+  'dropbox.com': 470,
+  'imgur.com': 460,
+  'flickr.com': 450,
+  'wetransfer.com': 440,
+  'cloudflare.com': 420,
+  'discord.com': 410,
 
-// Create popup container
-const popup = document.createElement('div');
-popup.style.cssText = `
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0 0 20px rgba(0,0,0,0.3);
-`;
+  // Medium usage (150-300 L/hr)
+  'twitter.com': 380,
+  'x.com': 380,
+  'reddit.com': 370,
+  'linkedin.com': 360,
+  'web.whatsapp.com': 350,
+  'web.telegram.org': 340,
+  'weibo.com': 330,
+  'qq.com': 320,
+  'baidu.com': 310,
+  'yandex.com': 300,
+  'bing.com': 290,
+  'duckduckgo.com': 280,
+  'ebay.com': 270,
+  'aliexpress.com': 260,
+  'walmart.com': 250,
+  'target.com': 240,
+  'bestbuy.com': 230,
+  'homedepot.com': 220,
+  'lowes.com': 210,
+  'etsy.com': 200,
+  'shopify.com': 190,
+  'paypal.com': 180,
+  'stripe.com': 170,
+  'square.com': 160,
+  'coinbase.com': 150,
+  'binance.com': 140,
 
-// Create message
-const message = document.createElement('h2');
-message.textContent = 'Are you sure?';
-const currentWebsite = window.location.href;
-message.textContent = currentWebsite;
-message.style.cssText = `
-  margin: 0 0 1rem 0;
-  color: #333;
-`;
+  // Medium-low usage (80-150 L/hr)
+  'wikipedia.org': 130,
+  'wordpress.com': 125,
+  'blogger.com': 120,
+  'medium.com': 115,
+  'quora.com': 110,
+  'stackoverflow.com': 105,
+  'github.com': 100,
+  'gitlab.com': 95,
+  'bitbucket.org': 90,
+  'atlassian.com': 85,
+  'trello.com': 80,
+  'asana.com': 75,
+  'slack.com': 70,
+  'teams.microsoft.com': 65,
+  'notion.so': 60,
+  'evernote.com': 55,
+  'airbnb.com': 50,
+  'booking.com': 45,
+  'expedia.com': 40,
+  'tripadvisor.com': 35,
+  'uber.com': 30,
+  'lyft.com': 25,
+  'doordash.com': 20,
+  'grubhub.com': 15,
+  'ubereats.com': 10,
 
-async function askGeminiWaterUsage(websiteUrl) {
-    const apiKey = "AIzaSyB68HjgeGD9suByT4ujxzLo5r3qUqtfrKg"; // I did replace with my actual API key
-    const endpoint = "https://api.gemini.com/v1/ask"; // example endpoint; replace with actual
+  // Low usage (1-80 L/hr)
+  'google.com': 5,
+  'maps.google.com': 8,
+  'gmail.com': 12,
+  'drive.google.com': 15,
+  'docs.google.com': 10,
+  'sheets.google.com': 10,
+  'calendar.google.com': 5,
+  'outlook.com': 8,
+  'mail.yahoo.com': 10,
+  'protonmail.com': 6,
+  'craigslist.org': 20,
+  'indeed.com': 25,
+  'glassdoor.com': 22,
+  'monster.com': 18,
+  'webmd.com': 30,
+  'mayoclinic.org': 25,
+  'healthline.com': 22,
+  'bbc.com': 40,
+  'cnn.com': 45,
+  'nytimes.com': 35,
+  'theguardian.com': 30,
+  'reuters.com': 25,
+  'ap.org': 20,
+  'weather.com': 15,
+  'accuweather.com': 12
+};
 
-    const prompt = `Estimate the amount of water used to run the website: ${websiteUrl}. Provide in liters per visit. Provide only an amount nothing else. Provide only 1 sigle number between 1-10. No letters at all. No words at all. Where 1 is next to zero and 10 is chat gpt levels. Please only a number. NO LETTERS OR WORDS.`;
+// Get monitored websites list
+const MONITORED_WEBSITES = Object.keys(WEBSITE_WATER_USAGE);
 
-    try {
-        const response = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        });
+async function checkWebsiteAndShowPopup() {
+  const currentUrl = window.location.hostname;
+  
+  // Check if current website is in our monitored list
+  const isMonitored = MONITORED_WEBSITES.some(site => 
+    currentUrl.includes(site.replace('www.', ''))
+  );
 
-        const data = await response.json();
-        const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response";
-        console.log("Gemini answer:", answer);
-        return answer;
+  if (!isMonitored) return;
 
-    } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        return "Error";
-    }
+  // Check if we've shown the popup for this site in this session
+  const sessionKey = `popupShown_${currentUrl}`;
+  const popupShown = sessionStorage.getItem(sessionKey);
+  
+  if (popupShown) return;
+
+  // Get current duck health
+  const result = await chrome.storage.local.get(['duckHealth']);
+  const currentHealth = result.duckHealth || 8;
+
+  // Create popup
+  createPopup(currentHealth, currentUrl);
+  sessionStorage.setItem(sessionKey, 'true');
 }
-// Run automatically
-askGeminiWaterUsage(window.location.href);
-// Example usage:
-const websiteUrl = window.location.href;
-askGeminiWaterUsage(websiteUrl).then(answer => {
-    console.log("Gemini says:", answer);
-});
 
+function createPopup(currentHealth, website) {
+  const popup = document.createElement('div');
+  popup.id = 'eco-duck-popup';
+  popup.innerHTML = `
+    <div class="popup-overlay">
+      <div class="popup-content">
+        <h3>Eco Duck Alert! 🦆</h3>
+        <div class="duck-status">
+          <img src="${chrome.runtime.getURL(`images/duck${currentHealth}.png`)}" 
+               alt="Duck Health: ${currentHealth}/8" width="80">
+          <p>Current Health: ${currentHealth}/8</p>
+        </div>
+        <p>This website (<strong>${website}</strong>) may use significant water resources for data processing.</p>
+        <p>Your choice will affect your duck's health!</p>
+        <div class="popup-buttons">
+          <button id="leave-site" class="btn-safe">Leave Site (Save Duck)</button>
+          <button id="stay-site" class="btn-risk">Stay (Risk Damage)</button>
+        </div>
+      </div>
+    </div>
+  `;
 
+  const style = document.createElement('style');
+  style.textContent = `
+    #eco-duck-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      font-family: Arial, sans-serif;
+    }
+    .popup-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .duck-status {
+      margin: 20px 0;
+    }
+    .popup-buttons {
+      margin-top: 20px;
+    }
+    .btn-safe, .btn-risk {
+      padding: 12px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .btn-safe {
+      background: #4CAF50;
+      color: white;
+    }
+    .btn-safe:hover {
+      background: #45a049;
+    }
+    .btn-risk {
+      background: #f44336;
+      color: white;
+    }
+    .btn-risk:hover {
+      background: #da190b;
+    }
+  `;
 
+  document.head.appendChild(style);
+  document.body.appendChild(popup);
 
+  // Add event listeners
+  document.getElementById('leave-site').addEventListener('click', () => {
+    document.body.removeChild(popup);
+    window.history.back(); // Go back to previous page
+  });
 
-// Create confirmation button
-const button = document.createElement('button');
-button.textContent = 'Yes, Continue';
-button.style.cssText = `
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-`;
+  document.getElementById('stay-site').addEventListener('click', async () => {
+    document.body.removeChild(popup);
+    await calculateAndApplyDamage(website);
+  });
+}
 
-// Add click event to remove overlay
-button.addEventListener('click', () => {
-  document.body.removeChild(overlay);
-});
+async function calculateAndApplyDamage(website) {
+  try {
+    // Get water usage from predefined list
+    let waterUsage = 100; // default
+    
+    // Find the matching website in our list
+    for (const [site, usage] of Object.entries(WEBSITE_WATER_USAGE)) {
+      if (website.includes(site.replace('www.', ''))) {
+        waterUsage = usage;
+        break;
+      }
+    }
 
-// Assemble elements
-popup.appendChild(message);
-popup.appendChild(button);
-overlay.appendChild(popup);
+    // Calculate damage based on water usage
+    let damage = 0;
+    if (waterUsage > 500) damage = 3;
+    else if (waterUsage > 300) damage = 2;
+    else if (waterUsage > 100) damage = 1;
+    else damage = 0;
 
-// Prevent keyboard events
-overlay.addEventListener('keydown', (e) => {
-  e.stopPropagation();
-  e.preventDefault();
-});
+    // Apply damage to duck
+    const result = await chrome.storage.local.get(['duckHealth']);
+    let currentHealth = result.duckHealth || 8;
+    currentHealth = Math.max(0, currentHealth - damage);
+    
+    await chrome.storage.local.set({ duckHealth: currentHealth });
 
-// Add to page
-document.body.appendChild(overlay);
+    // Show damage notification
+    showDamageNotification(damage, waterUsage, currentHealth);
 
-// Focus the button for accessibility
-button.focus();
+  } catch (error) {
+    console.error('Error calculating damage:', error);
+    // Apply minimal damage if anything fails
+    const result = await chrome.storage.local.get(['duckHealth']);
+    let currentHealth = result.duckHealth || 8;
+    currentHealth = Math.max(0, currentHealth - 1);
+    await chrome.storage.local.set({ duckHealth: currentHealth });
+  }
+}
 
+function showDamageNotification(damage, waterUsage, currentHealth) {
+  const notification = document.createElement('div');
+  notification.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff4444;
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      z-index: 10001;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    ">
+      <strong>Duck took damage! 🦆</strong><br>
+      Water usage: ${waterUsage}L<br>
+      Damage: -${damage} health<br>
+      Current health: ${currentHealth}/8
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 5000);
+}
+
+// Initialize when page loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', checkWebsiteAndShowPopup);
+} else {
+  checkWebsiteAndShowPopup();
+}

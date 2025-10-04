@@ -1,16 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Are You Sure Blocker with Dropdown",
+  "name": "Eco Duck Guardian",
   "version": "1.0",
-  "description": "Blocks pages with confirmation and has a dropdown menu",
-  "permissions": ["activeTab", "scripting"],
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "Website Blocker"
-  },
-  "host_permissions": [
-    "https://generativelanguage.googleapis.com/*"
+  "description": "Protect your duck by being mindful of website water usage",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -18,7 +18,17 @@
       "run_at": "document_end"
     }
   ],
-  "background": {
-    "service_worker": "background.js"
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Eco Duck Guardian"
+  },
+  "web_accessible_resources": [{
+    "resources": ["images/*.png"],
+    "matches": ["<all_urls>"]
+  }],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
