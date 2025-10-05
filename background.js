@@ -1,6 +1,6 @@
 // Background script for healing over time
 
-const HEAL_INTERVAL = 300000; // 5 minutes in milliseconds
+const HEAL_INTERVAL = 600000; // 5 minutes in milliseconds
 
 // Initialize duck health
 chrome.runtime.onInstalled.addListener(() => {

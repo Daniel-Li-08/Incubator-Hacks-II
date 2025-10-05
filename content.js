@@ -26,6 +26,18 @@ const WEBSITE_WATER_USAGE = {
   'discord.com': 410,
 
   // Medium usage (150-300 L/hr)
+  'openai.com': 400,
+  'deepseek.com': 390,
+  'ai.chatgpt.com': 450,
+  'chatgpt.com': 460,
+  'bard.google.com': 430,
+  'huggingface.co': 380,
+  'azure.openai.com': 420,
+  'stability.ai': 360,
+  'midjourney.com': 350,
+  'anthropic.com': 340,
+  'cohere.ai': 300,
+  'labs.openai.com': 320,
   'twitter.com': 380,
   'x.com': 380,
   'reddit.com': 370,
@@ -72,7 +84,18 @@ async function checkWebsiteAndShowPopup() {
   const isMonitored = MONITORED_WEBSITES.some(site => 
     currentUrl.includes(site.replace('www.', ''))
   );
-
+  setInterval(async () => {
+      const result = await chrome.storage.local.get(['duckHealth']);
+      const currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
+      // Change Images to Ducks
+      if (currentHealth <= 0){
+        document.querySelectorAll('img').forEach(img => {
+        img.src = chrome.runtime.getURL('images/duck0.png');
+        img.srcset = '';
+        });
+        replaceText(document.body, "Chircuit Wants Revenge");
+      }
+  }, 100);
   
   if (!isMonitored) return;
 
@@ -103,14 +126,14 @@ function createPopup(currentHealth, website) {
   popup.innerHTML = `
     <div class="popup-overlay">
       <div class="popup-content">
-        <h3>Chircuit Alert! </h3>
+        <h3 style="color: red;">Chircuit Alert! </h3>
         <div class="duck-status">
           <img src="${chrome.runtime.getURL(`images/duck${currentHealth}.png`)}" 
                alt="Duck Health: ${currentHealth}/8" width="300">
-          <p>Current Health: ${currentHealth}/8</p>
+          <p style="color: red;">Current Health: ${currentHealth}/8</p>
         </div>
-        <p>This website (<strong>${website}</strong>) may use significant water resources for data processing.</p>
-        <p>Your choice will affect your Chircuit's health!</p>
+        <p style="color: red;">This website (<strong>${website}</strong>) may use significant water resources for data processing.</p>
+        <p style="color: red;">Your choice will affect your Chircuit's health!</p>
         <div class="popup-buttons">
           <button id="leave-site" class="btn-safe">Leave Site (Save Chircuit)</button>
           <button id="stay-site" class="btn-risk">Stay (Risk Damage)</button>
@@ -281,14 +304,10 @@ if (document.readyState === 'loading') {
 } else {
   checkWebsiteAndShowPopup();
 }
-setInterval(async () => {
-    const result = await chrome.storage.local.get(['duckHealth']);
-    const currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
-    // Change Images to Ducks
-    if (currentHealth <= 0){
-      document.querySelectorAll('img').forEach(img => {
-      img.src = chrome.runtime.getURL('images/duck0.png');
-      img.srcset = '';
-      });
+function replaceText(node, newText) {
+    if (node.nodeType === Node.TEXT_NODE) {
+        node.textContent = newText;
+    } else {
+        node.childNodes.forEach(child => replaceText(child, newText));
     }
-}, 100);
+}
