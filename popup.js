@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     healthFill.style.width = percentage + '%';
     
     // Update health fill color
-    if (health <= 2) {
+    if (health <= 0) {
+      healthFill.style.backgroundColor = '#ff0000ff';
+      statusMessage.textContent = 'Chircuit is coming for you!';
+      statusMessage.style.color = '#ff0000ff';
+    }else if (currentHealth <= 2){
       healthFill.style.backgroundColor = '#f44336';
       statusMessage.textContent = 'Chircuit is dangerously thirsty';
       statusMessage.style.color = '#f44336';
