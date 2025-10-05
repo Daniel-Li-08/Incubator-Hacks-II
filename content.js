@@ -3,8 +3,7 @@ const WEBSITE_WATER_USAGE = {
   // High usage (300-800+ L/hr)
   'youtube.com': 780,
   'netflix.com': 750,
-  'aws.amazon.com': 720,
-  'cloud.google.com': 710,
+  'amazon.com': 720,
   'azure.microsoft.com': 700,
   'tiktok.com': 680,
   'twitch.tv': 650,
@@ -54,59 +53,13 @@ const WEBSITE_WATER_USAGE = {
   'coinbase.com': 150,
   'binance.com': 140,
 
-  // Medium-low usage (80-150 L/hr)
+  // Medium-low usage (100-150 L/hr)
   'wikipedia.org': 130,
   'wordpress.com': 125,
   'blogger.com': 120,
   'medium.com': 115,
   'quora.com': 110,
   'stackoverflow.com': 105,
-  'github.com': 100,
-  'gitlab.com': 95,
-  'bitbucket.org': 90,
-  'atlassian.com': 85,
-  'trello.com': 80,
-  'asana.com': 75,
-  'slack.com': 70,
-  'teams.microsoft.com': 65,
-  'notion.so': 60,
-  'evernote.com': 55,
-  'airbnb.com': 50,
-  'booking.com': 45,
-  'expedia.com': 40,
-  'tripadvisor.com': 35,
-  'uber.com': 30,
-  'lyft.com': 25,
-  'doordash.com': 20,
-  'grubhub.com': 15,
-  'ubereats.com': 10,
-
-  // Low usage (1-80 L/hr)
-  'google.com': 5,
-  'maps.google.com': 8,
-  'gmail.com': 12,
-  'drive.google.com': 15,
-  'docs.google.com': 10,
-  'sheets.google.com': 10,
-  'calendar.google.com': 5,
-  'outlook.com': 8,
-  'mail.yahoo.com': 10,
-  'protonmail.com': 6,
-  'craigslist.org': 20,
-  'indeed.com': 25,
-  'glassdoor.com': 22,
-  'monster.com': 18,
-  'webmd.com': 30,
-  'mayoclinic.org': 25,
-  'healthline.com': 22,
-  'bbc.com': 40,
-  'cnn.com': 45,
-  'nytimes.com': 35,
-  'theguardian.com': 30,
-  'reuters.com': 25,
-  'ap.org': 20,
-  'weather.com': 15,
-  'accuweather.com': 12
 };
 
 // Get monitored websites list
@@ -120,6 +73,7 @@ async function checkWebsiteAndShowPopup() {
     currentUrl.includes(site.replace('www.', ''))
   );
 
+  
   if (!isMonitored) return;
 
   // Check if we've shown the popup for this site in this session
@@ -130,8 +84,14 @@ async function checkWebsiteAndShowPopup() {
 
   // Get current duck health
   const result = await chrome.storage.local.get(['duckHealth']);
-  const currentHealth = result.duckHealth || 8;
-
+  let currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
+  // Change Images to Ducks
+  if (currentHealth <= 0){
+    document.querySelectorAll('img').forEach(img => {
+    img.src = 'images/duck0.png';
+    img.srcset = '';
+    });
+  }
   // Create popup
   createPopup(currentHealth, currentUrl);
   sessionStorage.setItem(sessionKey, 'true');
@@ -143,16 +103,16 @@ function createPopup(currentHealth, website) {
   popup.innerHTML = `
     <div class="popup-overlay">
       <div class="popup-content">
-        <h3>Eco Duck Alert! 🦆</h3>
+        <h3>Chircuit Alert! </h3>
         <div class="duck-status">
           <img src="${chrome.runtime.getURL(`images/duck${currentHealth}.png`)}" 
-               alt="Duck Health: ${currentHealth}/8" width="80">
+               alt="Duck Health: ${currentHealth}/8" width="300">
           <p>Current Health: ${currentHealth}/8</p>
         </div>
         <p>This website (<strong>${website}</strong>) may use significant water resources for data processing.</p>
-        <p>Your choice will affect your duck's health!</p>
+        <p>Your choice will affect your Chircuit's health!</p>
         <div class="popup-buttons">
-          <button id="leave-site" class="btn-safe">Leave Site (Save Duck)</button>
+          <button id="leave-site" class="btn-safe">Leave Site (Save Chircuit)</button>
           <button id="stay-site" class="btn-risk">Stay (Risk Damage)</button>
         </div>
       </div>
@@ -258,10 +218,22 @@ async function calculateAndApplyDamage(website) {
 
     // Apply damage to duck
     const result = await chrome.storage.local.get(['duckHealth']);
-    let currentHealth = result.duckHealth || 8;
+    let currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
     currentHealth = Math.max(0, currentHealth - damage);
-    
+    // Change Images to Ducks
+    if (currentHealth <= 0){
+      document.querySelectorAll('img').forEach(img => {
+      img.src = 'images/duck0.png';
+      img.srcset = '';
+      });
+    }
     await chrome.storage.local.set({ duckHealth: currentHealth });
+
+    // Notify background script to update badge
+    chrome.runtime.sendMessage({
+      action: "healthUpdated",
+      health: currentHealth
+    });
 
     // Show damage notification
     showDamageNotification(damage, waterUsage, currentHealth);
@@ -270,7 +242,7 @@ async function calculateAndApplyDamage(website) {
     console.error('Error calculating damage:', error);
     // Apply minimal damage if anything fails
     const result = await chrome.storage.local.get(['duckHealth']);
-    let currentHealth = result.duckHealth || 8;
+    let currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
     currentHealth = Math.max(0, currentHealth - 1);
     await chrome.storage.local.set({ duckHealth: currentHealth });
   }
@@ -290,8 +262,8 @@ function showDamageNotification(damage, waterUsage, currentHealth) {
       z-index: 10001;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     ">
-      <strong>Duck took damage! 🦆</strong><br>
-      Water usage: ${waterUsage}L<br>
+      <strong>Chircuit took damage!</strong><br>
+      Water usage: ${waterUsage}L/hr<br>
       Damage: -${damage} health<br>
       Current health: ${currentHealth}/8
     </div>

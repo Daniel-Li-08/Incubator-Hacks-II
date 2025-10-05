@@ -7,6 +7,8 @@
       width: 300px;
       padding: 20px;
       font-family: Arial, sans-serif;
+      border: 2px solid black;
+      outline: #000000 solid 10px;
     }
     .duck-container {
       text-align: center;
@@ -34,21 +36,11 @@
       font-weight: bold;
       margin: 10px 0;
     }
-    button {
-      width: 100%;
-      padding: 10px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #heal-btn {
-      background-color: #4CAF50;
-      color: white;
-    }
-    #reset-btn {
-      background-color: #ff9800;
-      color: white;
+    .status-message {
+      text-align: center;
+      font-style: italic;
+      color: #666;
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -58,6 +50,9 @@
     <div class="health-text">Health: <span id="health-value">8</span>/8</div>
     <div class="health-bar">
       <div id="health-fill" class="health-fill" style="width: 100%;"></div>
+    </div>
+    <div id="status-message" class="status-message">
+      Your duck will heal naturally over time
     </div>
   </div>
   

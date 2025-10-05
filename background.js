@@ -14,20 +14,37 @@ chrome.runtime.onInstalled.addListener(() => {
 // Heal duck over time
 setInterval(async () => {
   const result = await chrome.storage.local.get(['duckHealth']);
-  let currentHealth = result.duckHealth || 8;
+  let currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
   
+  // Only heal if not at full health
   if (currentHealth < 8) {
     currentHealth++;
     await chrome.storage.local.set({ duckHealth: currentHealth });
-    console.log(`Duck healed! Current health: ${currentHealth}/8`);
+    
+    // Update badge to show health
+    updateBadge(currentHealth);
   }
 }, HEAL_INTERVAL);
 
-// Listen for tab updates to trigger popup on monitored sites
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === 'complete' && tab.url) {
-    chrome.tabs.sendMessage(tabId, {
-      action: "checkWebsite"
-    });
+// Update badge with current health
+function updateBadge(health) {
+  let color = '#4CAF50'; // Green
+  if (health <= 2) color = '#f44336'; // Red
+  else if (health <= 4) color = '#ff9800'; // Orange
+  
+  chrome.action.setBadgeBackgroundColor({ color: color });
+  chrome.action.setBadgeText({ text: health.toString() });
+}
+
+// Initialize badge
+chrome.storage.local.get(['duckHealth'], (result) => {
+  const currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
+  updateBadge(currentHealth);
+});
+
+// Listen for health changes from content script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "healthUpdated") {
+    updateBadge(request.health);
   }
 });
