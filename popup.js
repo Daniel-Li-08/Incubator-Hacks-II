@@ -44,12 +44,5 @@ document.addEventListener('DOMContentLoaded', async function() {
     const result = await chrome.storage.local.get(['duckHealth']);
     const currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
     updateDuckDisplay(currentHealth);
-    // Change Images to Ducks
-    if (currentHealth <= 0){
-      document.querySelectorAll('img').forEach(img => {
-      img.src = chrome.runtime.getURL('images/duck0.png');
-      img.srcset = '';
-      });
-    }
   }, 1000);
 });

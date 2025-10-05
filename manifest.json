@@ -6,7 +6,8 @@
   "permissions": [
     "activeTab",
     "storage",
-    "tabs"
+    "tabs",
+    "alarms"
   ],
   "background": {
     "service_worker": "background.js"
@@ -20,6 +21,9 @@
   ],
   "action": {
     "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    },
     "default_title": "Eco Duck Guardian"
   },
   "web_accessible_resources": [{
