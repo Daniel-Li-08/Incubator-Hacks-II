@@ -88,7 +88,7 @@ async function checkWebsiteAndShowPopup() {
   // Change Images to Ducks
   if (currentHealth <= 0){
     document.querySelectorAll('img').forEach(img => {
-    img.src = 'images/duck0.png';
+    img.src = chrome.runtime.getURL('images/duck0.png');
     img.srcset = '';
     });
   }
@@ -223,7 +223,7 @@ async function calculateAndApplyDamage(website) {
     // Change Images to Ducks
     if (currentHealth <= 0){
       document.querySelectorAll('img').forEach(img => {
-      img.src = 'images/duck0.png';
+      img.src = chrome.runtime.getURL('images/duck0.png');
       img.srcset = '';
       });
     }
@@ -281,3 +281,14 @@ if (document.readyState === 'loading') {
 } else {
   checkWebsiteAndShowPopup();
 }
+setInterval(async () => {
+    const result = await chrome.storage.local.get(['duckHealth']);
+    const currentHealth = (typeof result.duckHealth === "undefined") ? 8 : result.duckHealth;
+    // Change Images to Ducks
+    if (currentHealth <= 0){
+      document.querySelectorAll('img').forEach(img => {
+      img.src = chrome.runtime.getURL('images/duck0.png');
+      img.srcset = '';
+      });
+    }
+}, 100);
