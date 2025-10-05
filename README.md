@@ -54,19 +54,19 @@ bash
     
 
 ## Project Structure
-`
-chircuit-guard/
-├── manifest.json
-├── popup.html
-├── popup.js
-├── content.js
-├── background.js
-├── images/
-│   ├── duck0.png
-│   ├── duck1.png
-│   └── ... (duck2-duck8.png)
-└── icons/
-`
+
+chircuit-guard/<br />
+├── manifest.json<br />
+├── popup.html<br />
+├── popup.js<br />
+├── content.js<br />
+├── background.js<br />
+├── images/<br />
+│   ├── duck0.png<br />
+│   ├── duck1.png<br />
+│   └── ... (duck2-duck8.png)<br />
+└── icons/<br />
+
 ## Troubleshooting
 
 **Extension not loading?**
