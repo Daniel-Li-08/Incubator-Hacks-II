@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Eco Duck Guardian",
+  "name": "Chircuit Guardian",
   "version": "1.0",
-  "description": "Protect your duck by being mindful of website water usage",
+  "description": "Protect circuit by being mindful of website water usage",
   "permissions": [
     "activeTab",
     "storage",
@@ -24,7 +24,7 @@
     "default_icon": {
       "128": "icons/icon128.png"
     },
-    "default_title": "Eco Duck Guardian"
+    "default_title": "Chircuit Guardian"
   },
   "web_accessible_resources": [{
     "resources": ["images/*.png"],

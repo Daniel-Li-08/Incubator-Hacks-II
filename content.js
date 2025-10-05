@@ -1,6 +1,18 @@
 // List of websites with predefined water usage (liters per hour)
 const WEBSITE_WATER_USAGE = {
   // High usage (300-800+ L/hr)
+  'openai.com': 800,
+  'deepseek.com': 790,
+  'ai.chatgpt.com': 750,
+  'chatgpt.com': 760,
+  'bard.google.com': 730,
+  'huggingface.co': 680,
+  'azure.openai.com': 620,
+  'stability.ai': 660,
+  'midjourney.com': 650,
+  'anthropic.com': 640,
+  'cohere.ai': 700,
+  'labs.openai.com': 720,
   'youtube.com': 780,
   'netflix.com': 750,
   'amazon.com': 720,
@@ -26,18 +38,7 @@ const WEBSITE_WATER_USAGE = {
   'discord.com': 410,
 
   // Medium usage (150-300 L/hr)
-  'openai.com': 400,
-  'deepseek.com': 390,
-  'ai.chatgpt.com': 450,
-  'chatgpt.com': 460,
-  'bard.google.com': 430,
-  'huggingface.co': 380,
-  'azure.openai.com': 420,
-  'stability.ai': 360,
-  'midjourney.com': 350,
-  'anthropic.com': 340,
-  'cohere.ai': 300,
-  'labs.openai.com': 320,
+  
   'twitter.com': 380,
   'x.com': 380,
   'reddit.com': 370,
@@ -93,7 +94,7 @@ async function checkWebsiteAndShowPopup() {
         img.src = chrome.runtime.getURL('images/duck0.png');
         img.srcset = '';
         });
-        replaceText(document.body, "Chircuit Wants Revenge");
+        replaceText(document.body, "Chircuit");
       }
   }, 100);
   
