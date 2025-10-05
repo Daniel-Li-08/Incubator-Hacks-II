@@ -1,5 +1,5 @@
 
-# Chircuit Guard 🦆💧
+# Chircuit Guard 
 
 > **Browse smarter. Save water. Protect your duck.**
 
@@ -12,7 +12,7 @@ A gamified Chrome extension that makes invisible environmental impacts visible b
 bash
 
 # Clone this repository
-'git clone https://github.com/your-username/chircuit-guard.git'
+`git clone https://github.com/your-username/chircuit-guard.git`
 
 # Or download the ZIP file and extract it
 
@@ -54,7 +54,7 @@ bash
     
 
 ## Project Structure
-
+`
 chircuit-guard/
 ├── manifest.json
 ├── popup.html
@@ -66,7 +66,7 @@ chircuit-guard/
 │   ├── duck1.png
 │   └── ... (duck2-duck8.png)
 └── icons/
-
+`
 ## Troubleshooting
 
 **Extension not loading?**
